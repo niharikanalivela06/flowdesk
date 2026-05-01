@@ -4,52 +4,71 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlowDesk – Team Task Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ============================================================
+       FlowDesk — Editorial / Utility-first
+       ============================================================ */
 
     :root {
-      /* Light theme with teal/emerald accent */
-      --bg: #f7f8fb;
-      --surface: #ffffff;
-      --surface2: #f1f3f8;
-      --border: #e4e7ee;
-      --border-strong: #d1d6e0;
-      --accent: #14b8a6;        /* teal-500 */
-      --accent-h: #0d9488;      /* teal-600 */
-      --accent-soft: #ccfbf1;   /* teal-100 */
-      --accent-2: #6366f1;      /* indigo-500 (secondary) */
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #f43f5e;        /* rose-500 */
-      --text: #0f172a;
-      --text-2: #334155;
-      --muted: #64748b;
-      --radius: 12px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
-      --shadow: 0 4px 12px rgba(15,23,42,.06), 0 2px 4px rgba(15,23,42,.04);
-      --shadow-lg: 0 20px 40px -10px rgba(15,23,42,.18), 0 8px 16px -8px rgba(15,23,42,.10);
+      --bg:         #F4F3EF;
+      --surface:    #FFFFFF;
+      --surface-2:  #F9F8F4;
+      --border:     #E5E3DB;
+      --border-2:   #D4D1C7;
+
+      --text:       #1A1916;
+      --text-2:     #5A5752;
+      --text-3:     #9A968E;
+
+      --accent:     #2563EB;
+      --accent-h:   #1D4ED8;
+      --accent-lt:  #EFF4FF;
+
+      --danger:     #DC2626;
+      --danger-lt:  #FEF2F2;
+      --success:    #16A34A;
+      --success-lt: #F0FDF4;
+      --warn:       #D97706;
+      --warn-lt:    #FFFBEB;
+
+      --radius-sm:  6px;
+      --radius:     10px;
+      --radius-lg:  16px;
+
+      --shadow-sm:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow:     0 4px 12px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.04);
+      --shadow-lg:  0 20px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
+
+      --nav-h:      60px;
+      --font:       'DM Sans', sans-serif;
+      --mono:       'DM Mono', monospace;
     }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-family: var(--font);
       background: var(--bg);
       color: var(--text);
+      line-height: 1.6;
       min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
     }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    input, select, textarea, button { font-family: var(--font); }
     .hidden { display: none !important; }
     .err { color: var(--danger); font-size: .82rem; min-height: 18px; margin-top: 5px; }
     .ok  { color: var(--success); font-size: .82rem; min-height: 18px; margin-top: 5px; }
 
-    /* ── AUTH ── */
+    /* ── Auth Pages ──────────────────────────────────────────── */
     .auth-screen {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(20,184,166,.18) 0%, transparent 60%),
-        radial-gradient(ellipse 70% 50% at 85% 90%, rgba(99,102,241,.15) 0%, transparent 60%),
-        var(--bg);
-      padding: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 2rem 1rem;
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(37,99,235,.06) 0, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(37,99,235,.04) 0, transparent 50%);
     }
     .auth-card {
       background: var(--surface);
@@ -59,339 +78,404 @@
       width: 100%; max-width: 420px;
       box-shadow: var(--shadow-lg);
     }
-    .auth-logo { text-align: center; margin-bottom: 2rem; }
-    .auth-logo .logo-icon {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 56px; height: 56px;
-      background: linear-gradient(135deg, var(--accent), #06b6d4);
-      border-radius: 14px; margin-bottom: .75rem;
-      box-shadow: 0 8px 20px -6px rgba(20,184,166,.5);
-      font-size: 1.6rem;
-    }
-    .auth-logo h1 {
-      font-size: 1.9rem; font-weight: 800; color: var(--text);
-      letter-spacing: -.02em;
-    }
-    .auth-logo h1 span { color: var(--accent); }
-    .auth-logo p { color: var(--muted); font-size: .9rem; margin-top: 4px; }
-    .auth-tabs {
-      display: flex; background: var(--surface2);
-      border-radius: 10px; padding: 4px; margin-bottom: 1.5rem;
-    }
-    .tab-btn {
-      flex: 1; padding: .55rem; border: none; border-radius: 7px;
-      background: transparent; color: var(--muted);
-      font-size: .9rem; font-weight: 500; cursor: pointer; transition: all .2s;
-    }
-    .tab-btn.active {
-      background: var(--surface); color: var(--accent); font-weight: 600;
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* ── FORMS ── */
-    .form-group { margin-bottom: 1rem; }
-    .form-group label {
-      display: block; font-size: .82rem; color: var(--text-2);
-      font-weight: 500; margin-bottom: 6px;
-    }
-    .form-group input, .form-group select {
-      width: 100%; padding: .7rem .9rem;
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius);
-      color: var(--text); font-size: .95rem;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .form-group input:focus, .form-group select:focus {
-      outline: none; border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(20,184,166,.15);
-    }
-    .form-group input::placeholder { color: #94a3b8; }
-
-    /* ── BUTTONS ── */
-    .btn {
-      padding: .65rem 1.2rem; border: none; border-radius: var(--radius);
-      font-size: .9rem; font-weight: 600; cursor: pointer;
-      transition: all .15s; display: inline-flex; align-items: center; gap: .4rem;
-    }
-    .btn-primary {
-      background: var(--accent); color: #fff;
-      box-shadow: 0 1px 2px rgba(20,184,166,.3);
-    }
-    .btn-primary:hover {
-      background: var(--accent-h); transform: translateY(-1px);
-      box-shadow: 0 4px 12px -2px rgba(20,184,166,.4);
-    }
-    .btn-secondary {
-      background: var(--surface2); color: var(--text-2);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover { background: var(--border); }
-    .btn-full { width: 100%; padding: .8rem; margin-top: .5rem; justify-content: center; }
-
-    /* ── APP LAYOUT ── */
-    .app-screen { display: flex; min-height: 100vh; }
-
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: 240px; background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; padding: 1.5rem 1rem;
-      position: fixed; top: 0; left: 0; bottom: 0;
-    }
-    .sidebar-logo {
-      display: flex; align-items: center; gap: .65rem;
-      font-size: 1.2rem; font-weight: 800; color: var(--text);
-      padding: 0 .5rem; margin-bottom: 2rem; letter-spacing: -.01em;
-    }
-    .sidebar-logo .logo-icon {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px;
-      background: linear-gradient(135deg, var(--accent), #06b6d4);
-      border-radius: 9px; font-size: 1rem;
-      box-shadow: 0 4px 10px -2px rgba(20,184,166,.4);
-    }
-    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-    .nav-item {
-      display: flex; align-items: center; gap: .75rem;
-      padding: .65rem .85rem; border-radius: var(--radius);
-      color: var(--muted); text-decoration: none;
-      font-size: .92rem; font-weight: 500; transition: all .15s;
-    }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active {
-      background: var(--accent-soft);
-      color: var(--accent-h); font-weight: 600;
-    }
-    .nav-icon { font-size: 1.05rem; width: 20px; }
-    .sidebar-footer { border-top: 1px solid var(--border); padding-top: 1rem; }
-    .user-info { display: flex; align-items: center; gap: .75rem; margin-bottom: .75rem; }
-    .user-avatar {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: .95rem; flex-shrink: 0;
-    }
-    .user-email {
-      font-size: .8rem; color: var(--text); font-weight: 500;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 145px;
-    }
-    .user-role { font-size: .73rem; color: var(--muted); text-transform: capitalize; }
-    .btn-logout {
-      width: 100%; padding: .55rem; background: transparent;
-      border: 1px solid var(--border); border-radius: var(--radius);
-      color: var(--muted); font-size: .85rem; font-weight: 500;
-      cursor: pointer; transition: all .15s;
-    }
-    .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: #fff1f2; }
-
-    /* ── MAIN ── */
-    .main-content { margin-left: 240px; flex: 1; padding: 2rem; overflow-y: auto; }
-    .view { display: none; }
-    .view.active { display: block; }
-    .page-header {
-      display: flex; align-items: center; justify-content: space-between;
+    .auth-logo {
+      display: flex; align-items: center; gap: .5rem;
       margin-bottom: 1.75rem;
     }
-    .page-header h2 {
-      font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em;
+    .logo-icon {
+      font-size: 1.6rem; color: var(--accent); line-height: 1;
     }
-    .date-badge {
-      background: var(--surface); border: 1px solid var(--border);
-      padding: .4rem .9rem; border-radius: 20px;
-      font-size: .82rem; color: var(--muted); font-weight: 500;
+    .logo-text {
+      font-size: 1.25rem; font-weight: 700;
+      letter-spacing: -.02em; color: var(--text);
     }
-    .section-title {
-      font-size: .85rem; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .05em;
-      margin: 1.75rem 0 1rem;
+    .auth-title {
+      font-size: 1.5rem; font-weight: 700;
+      margin-bottom: 1.5rem; letter-spacing: -.02em;
+    }
+    .auth-tabs {
+      display: flex; background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px; margin-bottom: 1.25rem;
+    }
+    .tab-btn {
+      flex: 1; padding: .5rem; border: none; border-radius: 4px;
+      background: transparent; color: var(--text-2);
+      font-size: .88rem; font-weight: 500;
+      cursor: pointer; transition: all .15s;
+    }
+    .tab-btn.active {
+      background: var(--surface); color: var(--accent);
+      font-weight: 600; box-shadow: var(--shadow-sm);
     }
 
-    /* ── STAT CARDS ── */
+    /* ── Navbar ──────────────────────────────────────────────── */
+    .navbar {
+      height: var(--nav-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 1.5rem; gap: 1.5rem;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: .5rem;
+      color: var(--text);
+    }
+    .nav-links {
+      display: flex; list-style: none;
+      gap: .25rem; flex: 1; margin: 0; padding: 0;
+    }
+    .nav-link {
+      padding: .4rem .85rem;
+      border-radius: var(--radius-sm);
+      font-size: .9rem; font-weight: 500;
+      color: var(--text-2);
+      transition: background .15s, color .15s;
+      text-decoration: none; cursor: pointer;
+    }
+    .nav-link:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+    .nav-link.active { background: var(--accent-lt); color: var(--accent); }
+
+    .nav-user {
+      display: flex; align-items: center; gap: .75rem;
+      margin-left: auto;
+    }
+    .user-name { font-size: .9rem; font-weight: 500; color: var(--text-2); }
+    .user-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--accent-lt); color: var(--accent);
+      font-size: .8rem; font-weight: 700; flex-shrink: 0;
+    }
+    .role-badge {
+      display: inline-block; padding: .15rem .5rem;
+      border-radius: 100px; font-size: .7rem;
+      font-weight: 700; text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .role-admin  { background: var(--accent-lt); color: var(--accent); }
+    .role-member { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
+
+    /* ── Main Layout ─────────────────────────────────────────── */
+    .main-content {
+      max-width: 1200px; margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Page Header ─────────────────────────────────────────── */
+    .page-header {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.75rem; gap: 1rem;
+    }
+    .page-header h1 {
+      font-size: 1.75rem; font-weight: 700;
+      letter-spacing: -.03em; line-height: 1.2;
+    }
+    .page-sub {
+      color: var(--text-2); margin-top: .25rem;
+      font-size: .9rem;
+    }
+
+    /* ── Forms ───────────────────────────────────────────────── */
+    .form-group {
+      display: flex; flex-direction: column;
+      gap: .4rem; margin-bottom: 1rem;
+    }
+    .form-group label {
+      font-size: .85rem; font-weight: 600;
+      color: var(--text-2);
+    }
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    input[type=date],
+    input[type=datetime-local],
+    select, textarea {
+      width: 100%; padding: .6rem .85rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--text);
+      font-size: .9rem;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    /* ── Buttons ─────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .55rem 1.1rem;
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-sm);
+      font-size: .9rem; font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, transform .1s;
+      text-decoration: none; white-space: nowrap; line-height: 1;
+    }
+    .btn:hover { text-decoration: none; }
+    .btn:active { transform: scale(.97); }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); }
+    .btn-secondary, .btn-ghost {
+      background: transparent; color: var(--text-2);
+      border-color: var(--border-2);
+    }
+    .btn-secondary:hover, .btn-ghost:hover {
+      background: var(--surface-2); color: var(--text);
+    }
+    .btn-danger {
+      background: var(--danger-lt); color: var(--danger);
+      border-color: #fca5a5;
+    }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-full { width: 100%; justify-content: center; }
+    .btn-sm   { padding: .38rem .75rem; font-size: .82rem; }
+    .btn-logout {
+      background: transparent; border: 1.5px solid var(--border-2);
+      color: var(--text-2); padding: .38rem .85rem;
+      border-radius: var(--radius-sm); font-size: .85rem;
+      font-weight: 500; cursor: pointer; transition: all .15s;
+    }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Stat Cards ──────────────────────────────────────────── */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 1rem; margin-bottom: 2rem;
     }
     .stat-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.25rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.25rem 1.1rem;
       display: flex; align-items: center; gap: 1rem;
       box-shadow: var(--shadow-sm);
-      transition: transform .2s, box-shadow .2s, border-color .2s;
+      transition: box-shadow .2s, transform .2s;
     }
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow); border-color: var(--border-strong);
-    }
-    .stat-icon {
-      width: 44px; height: 44px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; flex-shrink: 0;
-    }
-    .stat-icon.icon-total { background: #eef2ff; color: #6366f1; }
-    .stat-icon.icon-todo { background: #e0f2fe; color: #0284c7; }
-    .stat-icon.icon-progress { background: #fef3c7; color: #d97706; }
-    .stat-icon.icon-done { background: #d1fae5; color: #059669; }
-    .stat-icon.icon-overdue { background: #ffe4e6; color: #e11d48; }
+    .stat-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+    .stat-icon { font-size: 1.6rem; line-height: 1; }
+    .stat-info { display: flex; flex-direction: column; gap: .15rem; }
     .stat-value {
-      font-size: 1.85rem; font-weight: 800; line-height: 1;
-      color: var(--text); letter-spacing: -.02em;
+      font-size: 1.7rem; font-weight: 700;
+      letter-spacing: -.02em; line-height: 1;
     }
-    .stat-label { font-size: .78rem; color: var(--muted); margin-top: 5px; font-weight: 500; }
+    .stat-label {
+      font-size: .78rem; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .04em;
+      font-weight: 500; margin-top: .25rem;
+    }
 
-    /* ── TASK CARDS ── */
-    .task-list { display: flex; flex-direction: column; gap: .65rem; }
-    .task-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1rem 1.25rem;
-      display: flex; align-items: center; gap: 1rem;
-      box-shadow: var(--shadow-sm);
-      transition: border-color .2s, box-shadow .2s, transform .15s;
+    /* ── Section Title ───────────────────────────────────────── */
+    .section-title {
+      font-size: .85rem; font-weight: 700;
+      color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .06em;
+      margin: 1.75rem 0 .85rem;
     }
-    .task-card:hover {
-      border-color: var(--accent); box-shadow: var(--shadow);
-      transform: translateX(2px);
-    }
-    .task-card.overdue-card { border-left: 3px solid var(--danger); }
-    .task-info { flex: 1; }
-    .task-title { font-weight: 600; font-size: .95rem; margin-bottom: 5px; color: var(--text); }
-    .task-meta {
-      font-size: .78rem; color: var(--muted);
-      display: flex; gap: 1rem; flex-wrap: wrap;
-    }
-    .status-badge {
-      padding: .28rem .8rem; border-radius: 20px;
-      font-size: .75rem; font-weight: 600; white-space: nowrap;
-    }
-    .status-todo        { background: #e0f2fe; color: #0369a1; }
-    .status-in_progress { background: #fef3c7; color: #b45309; }
-    .status-done        { background: #d1fae5; color: #047857; }
-    .status-overdue     { background: #ffe4e6; color: #be123c; }
-    .status-select {
-      padding: .32rem .7rem; border-radius: 20px;
-      border: 1px solid var(--border-strong);
-      font-size: .75rem; font-weight: 600; cursor: pointer;
-      transition: all .2s; background: var(--surface); color: var(--text);
-    }
-    .status-select.status-todo        { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
-    .status-select.status-in_progress { background: #fef3c7; color: #b45309; border-color: #fde68a; }
-    .status-select.status-done        { background: #d1fae5; color: #047857; border-color: #a7f3d0; }
 
-    /* ── FILTER BAR ── */
-    .filter-bar { display: flex; gap: .5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    /* ── Filter Bar ──────────────────────────────────────────── */
+    .filter-bar {
+      display: flex; gap: .5rem; flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
     .filter-btn {
-      padding: .45rem 1rem; border: 1px solid var(--border-strong);
-      border-radius: 20px; background: var(--surface);
-      color: var(--text-2); font-size: .85rem; font-weight: 500;
+      padding: .42rem 1rem;
+      border: 1.5px solid var(--border-2);
+      border-radius: 100px;
+      background: var(--surface); color: var(--text-2);
+      font-size: .85rem; font-weight: 500;
       cursor: pointer; transition: all .15s;
     }
-    .filter-btn:hover { border-color: var(--accent); color: var(--accent-h); }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
     .filter-btn.active {
       background: var(--accent); border-color: var(--accent); color: #fff;
-      box-shadow: 0 2px 6px -1px rgba(20,184,166,.4);
     }
     .filter-btn.f-overdue.active {
       background: var(--danger); border-color: var(--danger);
-      box-shadow: 0 2px 6px -1px rgba(244,63,94,.4);
     }
 
-    /* ── PROJECT GRID ── */
+    /* ── Task Cards ──────────────────────────────────────────── */
+    .task-list { display: flex; flex-direction: column; gap: .75rem; }
+    .task-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.1rem;
+      display: flex; align-items: center; gap: 1rem;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .task-card:hover { border-color: var(--border-2); box-shadow: var(--shadow-sm); }
+    .task-card.overdue-card { border-left: 3px solid var(--danger); }
+    .task-info { flex: 1; min-width: 0; }
+    .task-title {
+      font-size: .93rem; font-weight: 600;
+      margin-bottom: .3rem;
+    }
+    .task-meta {
+      display: flex; gap: 1rem;
+      font-size: .8rem; color: var(--text-3);
+      flex-wrap: wrap;
+    }
+
+    /* ── Badges ──────────────────────────────────────────────── */
+    .status-badge {
+      display: inline-block; padding: .2rem .6rem;
+      border-radius: 100px; font-size: .75rem;
+      font-weight: 600; white-space: nowrap;
+    }
+    .status-todo        { background: #F1F5F9; color: #475569; }
+    .status-in_progress { background: #FFF7ED; color: #C2410C; }
+    .status-done        { background: #F0FDF4; color: #15803D; }
+    .status-overdue     { background: var(--danger-lt); color: var(--danger); }
+
+    .status-select {
+      padding: .32rem .65rem;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      font-size: .76rem; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+      background: var(--surface); color: var(--text);
+      width: auto;
+    }
+    .status-select.status-todo        { background: #F1F5F9; color: #475569; border-color: #E2E8F0; }
+    .status-select.status-in_progress { background: #FFF7ED; color: #C2410C; border-color: #FED7AA; }
+    .status-select.status-done        { background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }
+
+    /* ── Project Grid ────────────────────────────────────────── */
     .project-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
     }
     .project-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.5rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
       box-shadow: var(--shadow-sm);
-      transition: all .2s; position: relative; overflow: hidden;
-    }
-    .project-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      opacity: 0; transition: opacity .2s;
+      transition: box-shadow .2s, transform .2s, border-color .2s;
+      cursor: pointer;
     }
     .project-card:hover {
-      border-color: var(--accent); transform: translateY(-3px);
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow); transform: translateY(-2px);
+      border-color: var(--border-2);
     }
-    .project-card:hover::before { opacity: 1; }
-    .project-card-icon { font-size: 1.8rem; margin-bottom: .75rem; }
-    .project-card-name { font-weight: 700; font-size: 1rem; margin-bottom: 5px; color: var(--text); }
-    .project-card-meta { font-size: .78rem; color: var(--muted); }
+    .project-card-icon { font-size: 1.6rem; margin-bottom: .65rem; }
+    .project-card-name {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: -.01em; margin-bottom: .35rem;
+    }
+    .project-card-meta { font-size: .82rem; color: var(--text-3); }
 
-    /* ── MEMBER GRID ── */
+    /* ── Member Grid ─────────────────────────────────────────── */
     .member-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
     }
     .member-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.25rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
       display: flex; align-items: center; gap: 1rem;
       box-shadow: var(--shadow-sm);
-      transition: all .2s;
+      transition: box-shadow .2s, transform .2s;
     }
     .member-card:hover {
-      border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px);
+      box-shadow: var(--shadow); transform: translateY(-2px);
     }
     .member-avatar {
-      width: 46px; height: 46px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff; border-radius: 50%;
+      width: 44px; height: 44px;
+      background: var(--accent-lt); color: var(--accent);
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 1.1rem; flex-shrink: 0;
-      box-shadow: 0 4px 10px -3px rgba(20,184,166,.4);
+      font-weight: 700; font-size: 1rem; flex-shrink: 0;
     }
-    .member-email { font-size: .85rem; font-weight: 600; word-break: break-all; color: var(--text); }
+    .member-info { flex: 1; min-width: 0; }
+    .member-email {
+      font-size: .88rem; font-weight: 600;
+      color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     .member-role {
-      display: inline-block; margin-top: 5px; font-size: .7rem;
-      padding: 2px 9px; border-radius: 10px;
-      font-weight: 600; text-transform: capitalize;
+      display: inline-block; margin-top: .35rem;
+      font-size: .7rem; padding: .15rem .5rem;
+      border-radius: 100px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
     }
-    .role-admin  { background: #ede9fe; color: #6d28d9; }
-    .role-member { background: var(--accent-soft); color: var(--accent-h); }
 
-    /* ── MODALS ── */
+    /* ── Modals ──────────────────────────────────────────────── */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(15,23,42,.45);
-      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      background: rgba(10,10,10,.45);
+      backdrop-filter: blur(2px);
       display: flex; align-items: center; justify-content: center;
-      z-index: 100; padding: 1rem;
+      z-index: 200; padding: 1rem;
     }
     .modal {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 2rem;
-      width: 100%; max-width: 460px; box-shadow: var(--shadow-lg);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 480px;
+      max-height: 90vh; overflow-y: auto;
     }
     .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.5rem;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1.5px solid var(--border);
     }
-    .modal-header h3 {
-      font-size: 1.2rem; font-weight: 700; letter-spacing: -.01em;
-    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 700; }
     .modal-close {
-      background: transparent; border: none; color: var(--muted);
-      font-size: 1.1rem; cursor: pointer; padding: 6px 10px;
-      border-radius: 8px; transition: all .15s;
+      background: none; border: none;
+      font-size: 1rem; cursor: pointer;
+      color: var(--text-3);
+      padding: .25rem .4rem;
+      border-radius: var(--radius-sm);
+      transition: background .15s;
     }
-    .modal-close:hover { background: var(--surface2); color: var(--text); }
-    .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.25rem; }
+    .modal-close:hover { background: var(--surface-2); color: var(--text); }
+    .modal form { padding: 1.25rem 1.5rem; }
+    .modal-actions {
+      display: flex; justify-content: flex-end; gap: .65rem;
+      padding-top: 1rem; margin-top: .25rem;
+      border-top: 1.5px solid var(--border);
+      padding-top: 1rem;
+    }
 
-    /* ── EMPTY STATE ── */
-    .empty-state { text-align: center; padding: 3rem; color: var(--muted); }
-    .empty-state .empty-icon { font-size: 3rem; margin-bottom: .75rem; opacity: .6; }
-    .empty-state p { font-size: .95rem; }
+    /* ── Empty State ─────────────────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      color: var(--text-2);
+    }
+    .empty-state .empty-icon {
+      font-size: 3rem; margin-bottom: 1rem; opacity: .5;
+    }
+    .empty-state p { font-size: .9rem; color: var(--text-3); }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .sidebar { width: 100%; position: relative; height: auto; }
-      .main-content { margin-left: 0; padding: 1.25rem; }
-      .app-screen { flex-direction: column; }
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .main-content { padding: 1.25rem 1rem 3rem; }
+      .page-header  { flex-direction: column; }
+      .stats-grid   { grid-template-columns: repeat(2, 1fr); }
+      .nav-user .user-name, .nav-user .role-badge { display: none; }
+      .navbar { padding: 0 1rem; gap: 1rem; }
+      .nav-links { gap: 0; }
+      .nav-link { padding: .4rem .6rem; font-size: .82rem; }
     }
   </style>
 </head>
@@ -401,13 +485,13 @@
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
       <div class="auth-logo">
-        <span class="logo-icon">🌊</span>
-        <h1>Flow<span>Desk</span></h1>
-        <p>Team Task Manager</p>
+        <span class="logo-icon">⬢</span>
+        <span class="logo-text">FlowDesk</span>
       </div>
+      <h1 class="auth-title">Welcome back</h1>
 
       <div class="auth-tabs">
-        <button class="tab-btn active" id="loginTabBtn" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn active" id="loginTabBtn" onclick="switchTab('login')">Log In</button>
         <button class="tab-btn" id="signupTabBtn" onclick="switchTab('signup')">Sign Up</button>
       </div>
 
@@ -419,10 +503,10 @@
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" required />
+          <input type="password" id="loginPassword" placeholder="Your password" required />
         </div>
         <div id="loginError" class="err"></div>
-        <button type="submit" class="btn btn-primary btn-full">Login</button>
+        <button type="submit" class="btn btn-primary btn-full">Log In</button>
       </form>
 
       <!-- Signup Form -->
@@ -433,7 +517,7 @@
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="signupPassword" placeholder="••••••••" required />
+          <input type="password" id="signupPassword" placeholder="Choose a password" required />
         </div>
         <div class="form-group">
           <label>Role</label>
@@ -450,38 +534,27 @@
   </div>
 
   <!-- ════════════════ APP SCREEN ════════════════ -->
-  <div id="appScreen" class="app-screen hidden">
+  <div id="appScreen" class="hidden">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        <span class="logo-icon">🌊</span>FlowDesk
+    <!-- Top Navbar (replaces sidebar) -->
+    <nav class="navbar">
+      <div class="nav-brand">
+        <span class="logo-icon">⬢</span>
+        <span class="logo-text">FlowDesk</span>
       </div>
-      <nav class="sidebar-nav">
-        <a href="#" class="nav-item active" data-view="dashboard" onclick="return showView('dashboard',this)">
-          <span class="nav-icon">📊</span> Dashboard
-        </a>
-        <a href="#" class="nav-item" data-view="projects" onclick="return showView('projects',this)">
-          <span class="nav-icon">📁</span> Projects
-        </a>
-        <a href="#" class="nav-item" data-view="tasks" onclick="return showView('tasks',this)">
-          <span class="nav-icon">✅</span> Tasks
-        </a>
-        <a href="#" class="nav-item" data-view="team" onclick="return showView('team',this)">
-          <span class="nav-icon">👥</span> Team
-        </a>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="user-avatar" id="userAvatar">?</div>
-          <div>
-            <div class="user-email" id="userEmail">—</div>
-            <div class="user-role" id="userRole">—</div>
-          </div>
-        </div>
+      <ul class="nav-links">
+        <li><a class="nav-link active" data-view="dashboard" onclick="return showView('dashboard',this)">Dashboard</a></li>
+        <li><a class="nav-link" data-view="projects" onclick="return showView('projects',this)">Projects</a></li>
+        <li><a class="nav-link" data-view="tasks" onclick="return showView('tasks',this)">Tasks</a></li>
+        <li><a class="nav-link" data-view="team" onclick="return showView('team',this)">Team</a></li>
+      </ul>
+      <div class="nav-user">
+        <span class="user-badge" id="userAvatar">?</span>
+        <span class="user-name" id="userEmail">—</span>
+        <span class="role-badge role-member" id="userRole">—</span>
         <button class="btn-logout" onclick="logout()">Logout</button>
       </div>
-    </aside>
+    </nav>
 
     <!-- Main content -->
     <main class="main-content">
@@ -489,29 +562,46 @@
       <!-- ── DASHBOARD ── -->
       <div id="view-dashboard" class="view active">
         <div class="page-header">
-          <h2>Dashboard</h2>
-          <span class="date-badge" id="currentDate"></span>
+          <div>
+            <h1>Dashboard</h1>
+            <p class="page-sub" id="currentDate"></p>
+          </div>
         </div>
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-icon icon-total">📋</div>
-            <div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Tasks</div></div>
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTotal">0</span>
+              <span class="stat-label">Total Tasks</span>
+            </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon icon-todo">📌</div>
-            <div><div class="stat-value" id="statTodo">0</div><div class="stat-label">To Do</div></div>
+            <div class="stat-icon">🔲</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTodo">0</span>
+              <span class="stat-label">To Do</span>
+            </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon icon-progress">⏳</div>
-            <div><div class="stat-value" id="statInProgress">0</div><div class="stat-label">In Progress</div></div>
+            <div class="stat-icon">⚡</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statInProgress">0</span>
+              <span class="stat-label">In Progress</span>
+            </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon icon-done">✓</div>
-            <div><div class="stat-value" id="statDone">0</div><div class="stat-label">Done</div></div>
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statDone">0</span>
+              <span class="stat-label">Done</span>
+            </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon icon-overdue">⚠</div>
-            <div><div class="stat-value" id="statOverdue">0</div><div class="stat-label">Overdue</div></div>
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statOverdue">0</span>
+              <span class="stat-label">Overdue</span>
+            </div>
           </div>
         </div>
         <div class="section-title">Recent Tasks</div>
@@ -521,7 +611,10 @@
       <!-- ── PROJECTS ── -->
       <div id="view-projects" class="view">
         <div class="page-header">
-          <h2>Projects</h2>
+          <div>
+            <h1>Projects</h1>
+            <p class="page-sub">All projects you've created</p>
+          </div>
           <button class="btn btn-primary" onclick="openModal('projectModal')">+ New Project</button>
         </div>
         <div id="projectList" class="project-grid"></div>
@@ -530,7 +623,10 @@
       <!-- ── TASKS ── -->
       <div id="view-tasks" class="view">
         <div class="page-header">
-          <h2>Tasks</h2>
+          <div>
+            <h1>Tasks</h1>
+            <p class="page-sub">Filter and manage all your tasks</p>
+          </div>
           <button class="btn btn-primary" onclick="openModal('taskModal')">+ New Task</button>
         </div>
         <div class="filter-bar">
@@ -546,7 +642,10 @@
       <!-- ── TEAM ── -->
       <div id="view-team" class="view">
         <div class="page-header">
-          <h2>Team Members</h2>
+          <div>
+            <h1>Team Members</h1>
+            <p class="page-sub">Add and manage team members</p>
+          </div>
           <button class="btn btn-primary" onclick="openModal('memberModal')">+ Add Member</button>
         </div>
         <div id="memberList" class="member-grid"></div>
@@ -559,7 +658,7 @@
 
   <!-- Project Modal -->
   <div id="projectModal" class="modal-overlay hidden" onclick="closeModalOutside(event,'projectModal')">
-    <div class="modal">
+    <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h3>Create Project</h3>
         <button class="modal-close" onclick="closeModal('projectModal')">✕</button>
@@ -581,7 +680,7 @@
 
   <!-- Task Modal -->
   <div id="taskModal" class="modal-overlay hidden" onclick="closeModalOutside(event,'taskModal')">
-    <div class="modal">
+    <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h3>Create Task</h3>
         <button class="modal-close" onclick="closeModal('taskModal')">✕</button>
@@ -615,7 +714,7 @@
 
   <!-- Member Modal -->
   <div id="memberModal" class="modal-overlay hidden" onclick="closeModalOutside(event,'memberModal')">
-    <div class="modal">
+    <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h3>Add Team Member</h3>
         <button class="modal-close" onclick="closeModal('memberModal')">✕</button>
