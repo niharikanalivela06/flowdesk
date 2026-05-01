@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowDesk – Team Task Manager</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Light theme with teal/emerald accent */
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface2: #f1f3f8;
+      --border: #e4e7ee;
+      --border-strong: #d1d6e0;
+      --accent: #14b8a6;        /* teal-500 */
+      --accent-h: #0d9488;      /* teal-600 */
+      --accent-soft: #ccfbf1;   /* teal-100 */
+      --accent-2: #6366f1;      /* indigo-500 (secondary) */
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #f43f5e;        /* rose-500 */
+      --text: #0f172a;
+      --text-2: #334155;
+      --muted: #64748b;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
+      --shadow: 0 4px 12px rgba(15,23,42,.06), 0 2px 4px rgba(15,23,42,.04);
+      --shadow-lg: 0 20px 40px -10px rgba(15,23,42,.18), 0 8px 16px -8px rgba(15,23,42,.10);
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hidden { display: none !important; }
+    .err { color: var(--danger); font-size: .82rem; min-height: 18px; margin-top: 5px; }
+    .ok  { color: var(--success); font-size: .82rem; min-height: 18px; margin-top: 5px; }
+
+    /* ── AUTH ── */
+    .auth-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(20,184,166,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 85% 90%, rgba(99,102,241,.15) 0%, transparent 60%),
+        var(--bg);
+      padding: 1.5rem;
+    }
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      width: 100%; max-width: 420px;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-logo { text-align: center; margin-bottom: 2rem; }
+    .auth-logo .logo-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--accent), #06b6d4);
+      border-radius: 14px; margin-bottom: .75rem;
+      box-shadow: 0 8px 20px -6px rgba(20,184,166,.5);
+      font-size: 1.6rem;
+    }
+    .auth-logo h1 {
+      font-size: 1.9rem; font-weight: 800; color: var(--text);
+      letter-spacing: -.02em;
+    }
+    .auth-logo h1 span { color: var(--accent); }
+    .auth-logo p { color: var(--muted); font-size: .9rem; margin-top: 4px; }
+    .auth-tabs {
+      display: flex; background: var(--surface2);
+      border-radius: 10px; padding: 4px; margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      flex: 1; padding: .55rem; border: none; border-radius: 7px;
+      background: transparent; color: var(--muted);
+      font-size: .9rem; font-weight: 500; cursor: pointer; transition: all .2s;
+    }
+    .tab-btn.active {
+      background: var(--surface); color: var(--accent); font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── FORMS ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: .82rem; color: var(--text-2);
+      font-weight: 500; margin-bottom: 6px;
+    }
+    .form-group input, .form-group select {
+      width: 100%; padding: .7rem .9rem;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      color: var(--text); font-size: .95rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(20,184,166,.15);
+    }
+    .form-group input::placeholder { color: #94a3b8; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: .65rem 1.2rem; border: none; border-radius: var(--radius);
+      font-size: .9rem; font-weight: 600; cursor: pointer;
+      transition: all .15s; display: inline-flex; align-items: center; gap: .4rem;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 1px 2px rgba(20,184,166,.3);
+    }
+    .btn-primary:hover {
+      background: var(--accent-h); transform: translateY(-1px);
+      box-shadow: 0 4px 12px -2px rgba(20,184,166,.4);
+    }
+    .btn-secondary {
+      background: var(--surface2); color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-full { width: 100%; padding: .8rem; margin-top: .5rem; justify-content: center; }
+
+    /* ── APP LAYOUT ── */
+    .app-screen { display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px; background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; padding: 1.5rem 1rem;
+      position: fixed; top: 0; left: 0; bottom: 0;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: .65rem;
+      font-size: 1.2rem; font-weight: 800; color: var(--text);
+      padding: 0 .5rem; margin-bottom: 2rem; letter-spacing: -.01em;
+    }
+    .sidebar-logo .logo-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent), #06b6d4);
+      border-radius: 9px; font-size: 1rem;
+      box-shadow: 0 4px 10px -2px rgba(20,184,166,.4);
+    }
+    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .65rem .85rem; border-radius: var(--radius);
+      color: var(--muted); text-decoration: none;
+      font-size: .92rem; font-weight: 500; transition: all .15s;
+    }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent-h); font-weight: 600;
+    }
+    .nav-icon { font-size: 1.05rem; width: 20px; }
+    .sidebar-footer { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .user-info { display: flex; align-items: center; gap: .75rem; margin-bottom: .75rem; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .95rem; flex-shrink: 0;
+    }
+    .user-email {
+      font-size: .8rem; color: var(--text); font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 145px;
+    }
+    .user-role { font-size: .73rem; color: var(--muted); text-transform: capitalize; }
+    .btn-logout {
+      width: 100%; padding: .55rem; background: transparent;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--muted); font-size: .85rem; font-weight: 500;
+      cursor: pointer; transition: all .15s;
+    }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: #fff1f2; }
+
+    /* ── MAIN ── */
+    .main-content { margin-left: 240px; flex: 1; padding: 2rem; overflow-y: auto; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.75rem;
+    }
+    .page-header h2 {
+      font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em;
+    }
+    .date-badge {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: .4rem .9rem; border-radius: 20px;
+      font-size: .82rem; color: var(--muted); font-weight: 500;
+    }
+    .section-title {
+      font-size: .85rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .05em;
+      margin: 1.75rem 0 1rem;
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow); border-color: var(--border-strong);
+    }
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .stat-icon.icon-total { background: #eef2ff; color: #6366f1; }
+    .stat-icon.icon-todo { background: #e0f2fe; color: #0284c7; }
+    .stat-icon.icon-progress { background: #fef3c7; color: #d97706; }
+    .stat-icon.icon-done { background: #d1fae5; color: #059669; }
+    .stat-icon.icon-overdue { background: #ffe4e6; color: #e11d48; }
+    .stat-value {
+      font-size: 1.85rem; font-weight: 800; line-height: 1;
+      color: var(--text); letter-spacing: -.02em;
+    }
+    .stat-label { font-size: .78rem; color: var(--muted); margin-top: 5px; font-weight: 500; }
+
+    /* ── TASK CARDS ── */
+    .task-list { display: flex; flex-direction: column; gap: .65rem; }
+    .task-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      box-shadow: var(--shadow-sm);
+      transition: border-color .2s, box-shadow .2s, transform .15s;
+    }
+    .task-card:hover {
+      border-color: var(--accent); box-shadow: var(--shadow);
+      transform: translateX(2px);
+    }
+    .task-card.overdue-card { border-left: 3px solid var(--danger); }
+    .task-info { flex: 1; }
+    .task-title { font-weight: 600; font-size: .95rem; margin-bottom: 5px; color: var(--text); }
+    .task-meta {
+      font-size: .78rem; color: var(--muted);
+      display: flex; gap: 1rem; flex-wrap: wrap;
+    }
+    .status-badge {
+      padding: .28rem .8rem; border-radius: 20px;
+      font-size: .75rem; font-weight: 600; white-space: nowrap;
+    }
+    .status-todo        { background: #e0f2fe; color: #0369a1; }
+    .status-in_progress { background: #fef3c7; color: #b45309; }
+    .status-done        { background: #d1fae5; color: #047857; }
+    .status-overdue     { background: #ffe4e6; color: #be123c; }
+    .status-select {
+      padding: .32rem .7rem; border-radius: 20px;
+      border: 1px solid var(--border-strong);
+      font-size: .75rem; font-weight: 600; cursor: pointer;
+      transition: all .2s; background: var(--surface); color: var(--text);
+    }
+    .status-select.status-todo        { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+    .status-select.status-in_progress { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+    .status-select.status-done        { background: #d1fae5; color: #047857; border-color: #a7f3d0; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { display: flex; gap: .5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .filter-btn {
+      padding: .45rem 1rem; border: 1px solid var(--border-strong);
+      border-radius: 20px; background: var(--surface);
+      color: var(--text-2); font-size: .85rem; font-weight: 500;
+      cursor: pointer; transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent-h); }
+    .filter-btn.active {
+      background: var(--accent); border-color: var(--accent); color: #fff;
+      box-shadow: 0 2px 6px -1px rgba(20,184,166,.4);
+    }
+    .filter-btn.f-overdue.active {
+      background: var(--danger); border-color: var(--danger);
+      box-shadow: 0 2px 6px -1px rgba(244,63,94,.4);
+    }
+
+    /* ── PROJECT GRID ── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem;
+    }
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: all .2s; position: relative; overflow: hidden;
+    }
+    .project-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      opacity: 0; transition: opacity .2s;
+    }
+    .project-card:hover {
+      border-color: var(--accent); transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+    .project-card:hover::before { opacity: 1; }
+    .project-card-icon { font-size: 1.8rem; margin-bottom: .75rem; }
+    .project-card-name { font-weight: 700; font-size: 1rem; margin-bottom: 5px; color: var(--text); }
+    .project-card-meta { font-size: .78rem; color: var(--muted); }
+
+    /* ── MEMBER GRID ── */
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;
+    }
+    .member-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      box-shadow: var(--shadow-sm);
+      transition: all .2s;
+    }
+    .member-card:hover {
+      border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px);
+    }
+    .member-avatar {
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.1rem; flex-shrink: 0;
+      box-shadow: 0 4px 10px -3px rgba(20,184,166,.4);
+    }
+    .member-email { font-size: .85rem; font-weight: 600; word-break: break-all; color: var(--text); }
+    .member-role {
+      display: inline-block; margin-top: 5px; font-size: .7rem;
+      padding: 2px 9px; border-radius: 10px;
+      font-weight: 600; text-transform: capitalize;
+    }
+    .role-admin  { background: #ede9fe; color: #6d28d9; }
+    .role-member { background: var(--accent-soft); color: var(--accent-h); }
+
+    /* ── MODALS ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.45);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 1rem;
+    }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2rem;
+      width: 100%; max-width: 460px; box-shadow: var(--shadow-lg);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .modal-header h3 {
+      font-size: 1.2rem; font-weight: 700; letter-spacing: -.01em;
+    }
+    .modal-close {
+      background: transparent; border: none; color: var(--muted);
+      font-size: 1.1rem; cursor: pointer; padding: 6px 10px;
+      border-radius: 8px; transition: all .15s;
+    }
+    .modal-close:hover { background: var(--surface2); color: var(--text); }
+    .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.25rem; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 3rem; color: var(--muted); }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: .75rem; opacity: .6; }
+    .empty-state p { font-size: .95rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; position: relative; height: auto; }
+      .main-content { margin-left: 0; padding: 1.25rem; }
+      .app-screen { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════ AUTH SCREEN ════════════════ -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <span class="logo-icon">🌊</span>
+        <h1>Flow<span>Desk</span></h1>
+        <p>Team Task Manager</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="tab-btn active" id="loginTabBtn" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn" id="signupTabBtn" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required />
+        </div>
+        <div id="loginError" class="err"></div>
+        <button type="submit" class="btn btn-primary btn-full">Login</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="signupEmail" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signupPassword" placeholder="••••••••" required />
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="signupRole">
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div id="signupError" class="err"></div>
+        <div id="signupSuccess" class="ok"></div>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════ APP SCREEN ════════════════ -->
+  <div id="appScreen" class="app-screen hidden">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">🌊</span>FlowDesk
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-view="dashboard" onclick="return showView('dashboard',this)">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="#" class="nav-item" data-view="projects" onclick="return showView('projects',this)">
+          <span class="nav-icon">📁</span> Projects
+        </a>
+        <a href="#" class="nav-item" data-view="tasks" onclick="return showView('tasks',this)">
+          <span class="nav-icon">✅</span> Tasks
+        </a>
+        <a href="#" class="nav-item" data-view="team" onclick="return showView('team',this)">
+          <span class="nav-icon">👥</span> Team
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div>
+            <div class="user-email" id="userEmail">—</div>
+            <div class="user-role" id="userRole">—</div>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="view-dashboard" class="view active">
+        <div class="page-header">
+          <h2>Dashboard</h2>
+          <span class="date-badge" id="currentDate"></span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon icon-total">📋</div>
+            <div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Tasks</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-todo">📌</div>
+            <div><div class="stat-value" id="statTodo">0</div><div class="stat-label">To Do</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-progress">⏳</div>
+            <div><div class="stat-value" id="statInProgress">0</div><div class="stat-label">In Progress</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-done">✓</div>
+            <div><div class="stat-value" id="statDone">0</div><div class="stat-label">Done</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-overdue">⚠</div>
+            <div><div class="stat-value" id="statOverdue">0</div><div class="stat-label">Overdue</div></div>
+          </div>
+        </div>
+        <div class="section-title">Recent Tasks</div>
+        <div id="dashboardTaskList" class="task-list"></div>
+      </div>
+
+      <!-- ── PROJECTS ── -->
+      <div id="view-projects" class="view">
+        <div class="page-header">
+          <h2>Projects</h2>
+          <button class="btn btn-primary" onclick="openModal('projectModal')">+ New Project</button>
+        </div>
+        <div id="projectList" class="project-grid"></div>
+      </div>
+
+      <!-- ── TASKS ── -->
+      <div id="view-tasks" class="view">
+        <div class="page-header">
+          <h2>Tasks</h2>
+          <button class="btn btn-primary" onclick="openModal('taskModal')">+ New Task</button>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterTasks('all',this)">All</button>
+          <button class="filter-btn" onclick="filterTasks('todo',this)">To Do</button>
+          <button class="filter-btn" onclick="filterTasks('in_progress',this)">In Progress</button>
+          <button class="filter-btn" onclick="filterTasks('done',this)">Done</button>
+          <button class="filter-btn f-overdue" onclick="filterTasks('overdue',this)">⚠ Overdue</button>
+        </div>
+        <div id="taskList" class="task-list"></div>
+      </div>
+
+      <!-- ── TEAM ── -->
+      <div id="view-team" class="view">
+        <div class="page-header">
+          <h2>Team Members</h2>
+          <button class="btn btn-primary" onclick="openModal('memberModal')">+ Add Member</button>
+        </div>
+        <div id="memberList" class="member-grid"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ════════════════ MODALS ════════════════ -->
+
+  <!-- Project Modal -->
+  <div id="projectModal" class="modal-overlay hidden" onclick="closeModalOutside(event,'projectModal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create Project</h3>
+        <button class="modal-close" onclick="closeModal('projectModal')">✕</button>
+      </div>
+      <form onsubmit="handleCreateProject(event)">
+        <div class="form-group">
+          <label>Project Name</label>
+          <input type="text" id="projectName" placeholder="e.g. Marketing Campaign" required />
+        </div>
+        <div id="projectError" class="err"></div>
+        <div id="projectSuccess" class="ok"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('projectModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Modal -->
+  <div id="taskModal" class="modal-overlay hidden" onclick="closeModalOutside(event,'taskModal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create Task</h3>
+        <button class="modal-close" onclick="closeModal('taskModal')">✕</button>
+      </div>
+      <form onsubmit="handleCreateTask(event)">
+        <div class="form-group">
+          <label>Task Title</label>
+          <input type="text" id="taskTitle" placeholder="e.g. Design database schema" required />
+        </div>
+        <div class="form-group">
+          <label>Project</label>
+          <select id="taskProject" required></select>
+        </div>
+        <div class="form-group">
+          <label>Assign To</label>
+          <select id="taskAssignee" required></select>
+        </div>
+        <div class="form-group">
+          <label>Due Date</label>
+          <input type="datetime-local" id="taskDueDate" required />
+        </div>
+        <div id="taskError" class="err"></div>
+        <div id="taskSuccess" class="ok"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Member Modal -->
+  <div id="memberModal" class="modal-overlay hidden" onclick="closeModalOutside(event,'memberModal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add Team Member</h3>
+        <button class="modal-close" onclick="closeModal('memberModal')">✕</button>
+      </div>
+      <form onsubmit="handleAddMember(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="memberEmail" placeholder="member@example.com" required />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="memberPassword" placeholder="••••••••" required />
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="memberRole">
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div id="memberError" class="err"></div>
+        <div id="memberSuccess" class="ok"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('memberModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
